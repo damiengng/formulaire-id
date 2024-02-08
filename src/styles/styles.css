@@ -1,0 +1,30 @@
+/* styles.css */
+
+.page-container {
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.page-title {
+    font-size: 24px;
+    color: #333;
+}
+
+const containerStyle {
+    margin: '20px';
+    padding: '20px';
+    border: '1px solid #ccc';
+    borderRadius: '5px';
+}
+
+;
+
+const headerStyle {
+    background: '#333';
+    color: '#fff';
+    textAlign: 'center';
+    padding: '10px';
+    marginBottom: '10px';
+}
+
+;
