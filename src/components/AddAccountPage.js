@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/styles.css';
 
 function AddAccountPage() {
     const [identifiant, setIdentifiant] = useState('');
@@ -55,6 +56,7 @@ function AddAccountPage() {
                 console.error('Error:', error);
             });
     };
+
     const isValidEmail = (email) => {
         // Vérification de la présence du caractère "@"
         if (!email.includes('@')) {
@@ -88,37 +90,40 @@ function AddAccountPage() {
 
         return true;
     };
+
     return (
-        <div>
-            <h1>Ajouter un compte</h1>
-            {messageErreur && <p style={{ color: 'red' }}>{messageErreur}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>
-                        Identifiant:
-                        <input type="text" value={identifiant} onChange={handleIdentifiantChange} required />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Mot de passe:
-                        <input type="password" value={motDePasse} onChange={handleMotDePasseChange} required />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Nom:
-                        <input type="text" value={nom} onChange={handleNomChange} />
-                    </label>
-                </div>
-                <div>
-                    <label>
-                        Prénom:
-                        <input type="text" value={prenom} onChange={handlePrenomChange} />
-                    </label>
-                </div>
-                <button type="submit">Ajouter</button>
-            </form>
+        <div className="page-container">
+            <div className="form-container">
+                <h1>Ajouter un compte</h1>
+                {messageErreur && <p className="error-message">{messageErreur}</p>}
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label>
+                            Identifiant:
+                            <input type="text" value={identifiant} onChange={handleIdentifiantChange} required />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Mot de passe:
+                            <input type="password" value={motDePasse} onChange={handleMotDePasseChange} required />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Nom:
+                            <input type="text" value={nom} onChange={handleNomChange} />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Prénom:
+                            <input type="text" value={prenom} onChange={handlePrenomChange} />
+                        </label>
+                    </div>
+                    <button type="submit">Ajouter</button>
+                </form>
+            </div>
         </div>
     );
 }

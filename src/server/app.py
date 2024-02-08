@@ -43,7 +43,7 @@ def add_user():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'Utilisateur ajouté avec succès !'})
+    return jsonify({'message': 'Utilisateur ajouté avec succès ! Merci de retourner à l\'accueil.'})
 
 
 with app.app_context():
