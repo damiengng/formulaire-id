@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import logo from '../images/simpson.png';
 import '../styles/styles.css';
 
@@ -8,23 +9,31 @@ function HomePage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `username=${username}&password=${password}`,
-        })
-            .then(response => response.json())
-            .then(data => {
-                setMessage(data.message);
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${username}&password=${password}`,
             });
+
+            if (response.ok) {
+                const data = await response.json();
+                setMessage(data.message);
+                navigate('/features'); // Redirigez vers la page d'accueil après connexion réussie
+            } else {
+                console.error('Error:', response.status);
+                setMessage('Une erreur s\'est produite lors de la connexion.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setMessage('Une erreur s\'est produite lors de la connexion.');
+        }
     };
 
     const handleReset = (e) => {

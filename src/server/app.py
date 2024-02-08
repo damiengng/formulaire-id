@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from passlib.hash import sha256_crypt
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///utilisateurs.db'
@@ -12,6 +13,11 @@ class Utilisateur(db.Model):
     prenom = db.Column(db.String(50))
     nom = db.Column(db.String(50))
 
+def clear_database():
+    with app.app_context():
+        Utilisateur.query.delete()
+        db.session.commit()
+
 # connexion
 @app.route('/login', methods=['POST'])
 def login():
@@ -21,7 +27,8 @@ def login():
 
     user = Utilisateur.query.filter_by(identifiant=username, mot_de_passe=password).first()
     if user:
-        return jsonify({'message': 'Vous êtes connecté, pas de fonctionnalités pour le moment !'})
+        if sha256_crypt.verify(password, user.mot_de_passe):
+            return jsonify({'message': 'Vous êtes connecté, pas de fonctionnalités pour le moment !'})
     else:
         return jsonify({'message': 'Identifiant/mot de passe incorrect'})
 
@@ -33,12 +40,13 @@ def add_user():
     nom = request.form.get('nom')
     prenom = request.form.get('prenom')
 
-    new_user = Utilisateur(identifiant=identifiant, mot_de_passe=mot_de_passe, nom=nom, prenom=prenom)
+    hashed_password = sha256_crypt.hash(mot_de_passe)
+    new_user = Utilisateur(identifiant=identifiant, mot_de_passe=hashed_password, nom=nom, prenom=prenom)
 
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'Utilisateur ajouté avec succès !'})
+    return jsonify({'message': 'Votre inscription a bien été prise en compte !'})
 
 
 with app.app_context():
@@ -46,9 +54,19 @@ with app.app_context():
     db.create_all()
 
     if not Utilisateur.query.first():
-        utilisateur_test = Utilisateur(identifiant='toto', mot_de_passe='@ttention123456', prenom='Toto', nom='Tutu')
+        identifiant = 'toto'
+        mot_de_passe = '@ttention123456'
+        nom = 'Tutu'
+        prenom = 'Toto'
+
+        hashed_password = sha256_crypt.hash(mot_de_passe)
+        utilisateur_test = Utilisateur(identifiant=identifiant, mot_de_passe=hashed_password, prenom=prenom, nom=nom)
         db.session.add(utilisateur_test)
         db.session.commit()
 
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+#if __name__ == '__main__':
+#    clear_database()

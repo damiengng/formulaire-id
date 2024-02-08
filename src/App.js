@@ -10,11 +10,9 @@ function App() {
     <Router>
       <div>
         <nav>
-          <ul>
-            <li>
-              <Link to="/">Accueil</Link>
-            </li>
-          </ul>
+          <li>
+            <Link to="/">Accueil</Link>
+          </li>
         </nav>
         <Routes>
           { }
