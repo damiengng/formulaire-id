@@ -40,7 +40,7 @@ function AddAccountPage() {
         setMessageErreur('');
 
         // Envoi des données à la route pour ajouter un utilisateur
-        fetch('/add-user', {
+        fetch('http://127.0.0.1:5000/add-user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
