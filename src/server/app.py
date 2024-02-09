@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///utilisateurs.db'
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 class Utilisateur(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,8 +28,8 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    user = Utilisateur.query.filter_by(identifiant=username, mot_de_passe=password).first()
-    if user:
+    user = Utilisateur.query.filter_by(identifiant=username).first()
+    if user and bcrypt.check_password_hash(user.mot_de_passe, password):
         return jsonify({'message': 'Vous êtes connecté, pas de fonctionnalités pour le moment !'})
     else:
         return jsonify({'message': 'Identifiant/mot de passe incorrect'})
@@ -40,7 +42,9 @@ def add_user():
     nom = request.form.get('nom')
     prenom = request.form.get('prenom')
 
-    new_user = Utilisateur(identifiant=identifiant, mot_de_passe=mot_de_passe, nom=nom, prenom=prenom)
+    hashed_password = bcrypt.generate_password_hash(mot_de_passe).decode('utf-8')
+
+    new_user = Utilisateur(identifiant=identifiant, mot_de_passe=hashed_password, nom=nom, prenom=prenom)
 
     db.session.add(new_user)
     db.session.commit()
@@ -53,7 +57,8 @@ with app.app_context():
     db.create_all()
 
     if not Utilisateur.query.first():
-        utilisateur_test = Utilisateur(identifiant='toto', mot_de_passe='@ttention123456', prenom='Toto', nom='Tutu')
+        hashed_password = bcrypt.generate_password_hash('@ttention123456').decode('utf-8')
+        utilisateur_test = Utilisateur(identifiant='toto', mot_de_passe=hashed_password, prenom='Toto', nom='Tutu')
         db.session.add(utilisateur_test)
         db.session.commit()
 
