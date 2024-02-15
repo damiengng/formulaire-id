@@ -15,6 +15,17 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
+@app.after_request
+def add_security_headers(response):
+    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
+
+# Configuration de CORS
+cors = CORS(app, resources={r"/api/*": {"origins": "https://example.com"}})
+
 class Utilisateur(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     identifiant = db.Column(db.String(50), unique=True, nullable=False)
@@ -35,7 +46,7 @@ def login():
 
     user = Utilisateur.query.filter_by(identifiant=username).first()
     if user and bcrypt.check_password_hash(user.mot_de_passe, password):
-        access_token = create_access_token(identity=user.id)  # Créez un token JWT avec l'identifiant de l'utilisateur
+        access_token = create_access_token(identity=user.id)
         return jsonify(message = "Vous êtes connecté, pas de fonctionnalités pour le moment !", access_token=access_token), 200
     else:
         return jsonify({'message': 'Identifiant/mot de passe incorrect'}), 401
