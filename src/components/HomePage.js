@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import logo from '../images/vador.jpeg';
 import '../styles/styles.css';
 
+// modifier OWASP A1 A5 A8
+
 function HomePage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
